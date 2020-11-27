@@ -1,0 +1,57 @@
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+let input = '';
+process.stdin.on('data', function(chunk) {input += chunk;});
+process.stdin.on('end', function() {main(input.split("\n"));});
+ 
+function partition(A,p,r) {
+	let x = A[r].num;
+	let i = p - 1;
+	let tmp;
+	for (let j = p; j < r; j++) {
+		if (A[j].num <= x) {
+			i++;
+			tmp=A[i]; A[i]=A[j]; A[j]=tmp;
+		}
+	}
+	i++;
+	tmp=A[i]; A[i]=A[r]; A[r]=tmp;
+
+	return i;
+}
+
+function quickSort(A,p,r) {
+	if (p >= r) return;
+	let q = partition(A,p,r);
+	quickSort(A,p,q-1);
+	quickSort(A,q+1,r);
+}
+
+function isStable(A,n) {
+	let work = null;
+	for (let i = 0; i < n; i++) {
+		if (work !== null && A[i].num === work.num && A[i].id < work.id) return false;
+		work = A[i];
+	}
+	return true;
+}
+
+function main(lines){
+	let n = Number(lines[0]);
+	let A = [];
+	for (let i = 0; i < n; i++) {
+		let tmp = {};
+		tmp.id = i;
+		tmp.pat = lines[i+1].split(" ")[0];
+		tmp.num = Number(lines[i+1].split(" ")[1]);
+		A.push(tmp);
+	}
+	quickSort(A,0,n-1);
+
+	if (isStable(A,n)) console.log("Stable");
+	else console.log("Not stable");
+
+	for (let i = 0; i < n; i++) {
+		console.log(`${A[i].pat} ${A[i].num}`);
+	}
+}
